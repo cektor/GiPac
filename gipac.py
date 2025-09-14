@@ -542,8 +542,8 @@ License: GPL-3.0+""")
                 </ul>
                 
                 <h3 style="color: #00b4d8;">Lisans</h3>
-                <p>Bu yazılım GNU Genel Kamu Lisansı (GPL) sürüm 3 altında lisanslanmıştır.</p>
-                <p>Detaylı bilgi için: <a style="color: #00b4d8;" href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a></p>
+                <p>Bu yazılım Creative Commons BY-NC-ND altında lisanslanmıştır.</p>
+                <p>Detaylı bilgi için: <a style="color: #00b4d8;" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons BY-NC-ND</a></p>
                 
                 <h3 style="color: #00b4d8;">Geliştirici</h3>
                 <p>Fatih ÖNDER (CekToR)<br>
