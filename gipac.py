@@ -1,9 +1,7 @@
+#!/usr/bin/env python3
 import sys
-import os
 import shutil
-import subprocess
-import json
-import locale
+
 
 # UTF-8 ayarlarını yap
 locale.getpreferredencoding = lambda: 'UTF-8'
@@ -11,7 +9,6 @@ sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
 from PyQt5.QtWidgets import (QApplication, QWidget, QFormLayout, QLineEdit, 
-                            QPlainTextEdit, QPushButton, QLabel, QMessageBox,
 
 
 def get_logo_path():
@@ -29,6 +26,38 @@ def get_logo_path():
     return None
 
 class DebCreatorApp(QWidget):
+    # Lisans metnini sınıf değişkeni olarak tanımla
+    LICENSE_TEXT = """
+            <h2 style="color: #0077b6; text-align: center;">ALG Yazılım & Elektronik – Yazılım Lisansı</h2>
+            <p><b>Lisans Veren:</b> ALG Yazılım & Elektronik<br>
+            <b>Telif Hakkı Sahibi:</b> Fatih ÖNDER (CekToR)</p>
+
+            <h3 style="color: #00b4d8;">1. Amaç</h3>
+            <p>Bu lisans, GiPac - Gift Package adlı yazılımın kaynak kodunun görülebilir, ücretsiz kullanılabilir ve dağıtılabilir olmasını sağlar. Ancak yazılım üzerinde herhangi bir değişiklik, türev çalışma veya ticari kullanım kesinlikle yasaktır.</p>
+
+            <h3 style="color: #00b4d8;">2. Haklar</h3>
+            <p>Kullanıcılar:</p>
+            <ul>
+                <li>Yazılımı ücretsiz olarak kullanabilir.</li>
+                <li>Yazılımın kaynak kodunu inceleyebilir.</li>
+                <li>Yazılımı orijinal haliyle dağıtabilir.</li>
+            </ul>
+
+            <h3 style="color: #00b4d8;">3. Kısıtlamalar</h3>
+            <p>Kullanıcılar:</p>
+            <ul>
+                <li>Yazılımın veya kaynak kodunun herhangi bir kısmını değiştiremez, uyarlayamaz veya türev eser oluşturamaz.</li>
+                <li>Yazılımı ticari amaçlarla (satış, kiralama, hizmet sunumu vb.) kullanamaz.</li>
+                <li>Yazılımın orijinal lisans ve telif hakkı bilgilerini kaldıramaz.</li>
+            </ul>
+
+            <h3 style="color: #00b4d8;">4. Garanti ve Sorumluluk Reddi</h3>
+            <p>Yazılım "olduğu gibi" sunulmaktadır. ALG Yazılım & Elektronik ve Fatih ÖNDER (CekToR), yazılımın kullanımı sonucu doğabilecek herhangi bir zarardan sorumlu tutulamaz.</p>
+
+            <h3 style="color: #00b4d8;">5. Geçerlilik</h3>
+            <p>Bu lisans, yazılımın her kopyası için geçerlidir. Lisans koşullarına uymayan kullanıcıların lisans hakkı otomatik olarak sona erer.</p>
+    """
+
     def __init__(self):
         super().__init__()
         # Log görüntüleyici ve iptal butonu başlatma
@@ -36,16 +65,7 @@ class DebCreatorApp(QWidget):
         self.cancel_button = QPushButton('İptal')
         
         # Uygulama ikonunu ayarla
-        logo_path = get_logo_path()
-        if logo_path:
-            app_icon = QIcon(logo_path)
-            self.setWindowIcon(app_icon)
-            QApplication.setWindowIcon(app_icon)
-            
-            # System Tray ikonunu oluştur
-            self.tray_icon = QSystemTrayIcon(app_icon, self)
-            self.create_tray_menu()
-            self.tray_icon.show()
+      
         
         try:
             self.initUI()
@@ -74,9 +94,7 @@ class DebCreatorApp(QWidget):
             else:
                 self.hide()
 
-    def initUI(self):
-        self.setGeometry(100, 100, 1200, 800)
-        self.setWindowTitle('GiPac - Gift Package')
+  
         self.setStyleSheet("""
             QWidget {
                 font-size: 11pt;
@@ -412,7 +430,13 @@ class DebCreatorApp(QWidget):
 
   * Initial release
 
-
+ -- Maintainer <email@example.com>  {datetime.now().strftime('%a, %d %b %Y %H:%M:%S +0300')}""")
+        
+        changelog_btn = QPushButton("Örnek")
+        changelog_btn.clicked.connect(lambda: self.set_example_text(self.changelog, self.packageName.text(), 
+                                    self.version.text(), self.author.text(), self.email.text()))
+        changelog_layout.addWidget(self.changelog)
+        changelog_layout.addWidget(changelog_btn)
         
         # Copyright için yatay düzen
         copyright_layout = QHBoxLayout()
@@ -521,7 +545,8 @@ License: GPL-3.0+""")
             about_layout.addWidget(logo_label)
         
         about_text = QTextBrowser()
-        about_text.setOpenExternalLinks(True)  # Dış linkleri açmayı etkinleştir
+        about_text.setOpenExternalLinks(False)  # Dış linkleri açmayı devre dışı bırak
+        about_text.anchorClicked.connect(self.handle_link_click)  # Sinyal bağlantısı ekle
         about_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         about_text.setHtml("""
             <div style="text-align: center;">
@@ -542,8 +567,7 @@ License: GPL-3.0+""")
                 </ul>
                 
                 <h3 style="color: #00b4d8;">Lisans</h3>
-                <p>Bu yazılım Creative Commons BY-NC-ND altında lisanslanmıştır.</p>
-                <p>Detaylı bilgi için: <a style="color: #00b4d8;" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons BY-NC-ND</a></p>
+                <p>Bu yazılım <a href="#show_license" style="color: #00b4d8;">ALG Yazılım & Elektronik – Yazılım Lisansı</a> altında lisanslanmıştır.</p>
                 
                 <h3 style="color: #00b4d8;">Geliştirici</h3>
                 <p>Fatih ÖNDER (CekToR)<br>
@@ -627,13 +651,7 @@ License: GPL-3.0+""")
         
         main_layout.addLayout(bottom_layout)
 
-        # Splitter'a ekle
-        main_splitter.addWidget(top_widget)
-        main_splitter.addWidget(self.log_text)
-        
-        # Ana düzene ekle
-        final_layout = QVBoxLayout(self)
-        final_layout.addWidget(main_splitter)
+
 
         self.setLayout(final_layout)
 
@@ -712,6 +730,33 @@ License: GPL-3.0+""")
         
         help_dialog.exec_()
 
+    def show_license(self):
+        """Lisans popup'ını göster"""
+        license_dialog = QDialog(self)
+        license_dialog.setWindowTitle("ALG Yazılım & Elektronik – Yazılım Lisansı")
+        license_dialog.setMinimumSize(600, 500)
+        
+        layout = QVBoxLayout(license_dialog)
+        
+        text = QTextBrowser()
+        text.setOpenExternalLinks(False)
+        text.setHtml(self.LICENSE_TEXT)
+        
+        close_button = QPushButton("Kapat")
+        close_button.clicked.connect(license_dialog.close)
+        
+        layout.addWidget(text)
+        layout.addWidget(close_button)
+        
+        license_dialog.exec_()
+
+    def handle_link_click(self, url):
+        """Link tıklamalarını yönet"""
+        if url.toString() == "#show_license":  # # işareti eklendi
+            self.show_license()
+        else:
+            QDesktopServices.openUrl(url)
+
     def select_directory(self, edit_widget):
         """Dizin seçme dialogu"""
         directory = QFileDialog.getExistingDirectory(self, "Dizin Seç", "",
@@ -760,17 +805,16 @@ License: GPL-3.0+""")
         self.log_text.append(f'<span style="color: {color}">[{level.upper()}] {message}</span>')
         self.log_text.moveCursor(QTextCursor.End)
 
-    def cancel_operation(self):
-        """İşlemi iptal et"""
-        reply = QMessageBox.question(self, 'İptal', 'İşlemi iptal etmek istediğinize emin misiniz?',
-                                   QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self.log("İşlem kullanıcı tarafından iptal edildi.", "warning")
-            # Temizlik işlemleri
-            self.cleanup()
 
-
-
+    def create_deb_package(self):
+        try:
+            # Önce çıktı dizinini seç
+            output_dir = QFileDialog.getExistingDirectory(
+                self,
+                "Paket Nereye Kaydedilsin?",
+                os.path.expanduser("~"),  # Varsayılan olarak home dizini
+                QFileDialog.ShowDirsOnly | QFileDialog.DontUseNativeDialog
+            )
             
             if not output_dir:  # Kullanıcı iptal ettiyse
                 return
@@ -782,7 +826,15 @@ License: GPL-3.0+""")
             
             self.log("Paket oluşturma işlemi başlatılıyor...", "info")
             
-
+            package_name = self.packageName.text().strip().replace(" ", "-").lower()
+            version = self.version.text().strip()
+            author_name = self.author.text().strip()
+            author_email = self.email.text().strip()
+            author = f"{author_name} <{author_email}>"  # Birleştirme burada yapılıyor
+            description = self.description.toPlainText().strip()
+            dependencies = self.dependencies.text().strip()
+            file_path = self.filePath.text().strip()
+            
             # Zorunlu alanları kontrol etme
             if not all([package_name, version, author, description, file_path]):
                 QMessageBox.warning(self, "Hata", "Lütfen tüm alanları doldurun.")
@@ -794,6 +846,11 @@ License: GPL-3.0+""")
             if os.path.exists(temp_dir):
                 shutil.rmtree(temp_dir)
 
+            # Tüm gerekli dizinleri oluştur
+            os.makedirs(f"{temp_dir}/DEBIAN", exist_ok=True)
+            os.makedirs(f"{temp_dir}/usr/bin", exist_ok=True)
+            os.makedirs(f"{temp_dir}/usr/share/applications", exist_ok=True)
+            os.makedirs(f"{temp_dir}/usr/share/icons", exist_ok=True)
 
             self.progress.setValue(20)
 
@@ -837,7 +894,16 @@ Depends: {dependencies}"""
 
             # Desktop dosyası oluştur
             desktop_content = f"""[Desktop Entry]
-
+Name={self.desktop_name.text() or package_name}
+Name[tr]={self.desktop_name_tr.text()}
+Comment={self.desktop_comment.text() or description}
+Comment[tr]={self.desktop_comment_tr.text()}
+Exec=/usr/bin/{package_name}
+Terminal={self.desktop_terminal.currentText()}
+Type={self.desktop_type.currentText()}
+Icon={self.desktop_icon.text() or f'/usr/share/icons/{package_name}.png'}
+Categories={self.sub_category.currentText()};
+"""
             # Changelog içeriğini de güncelle
             changelog_content = f"""{package_name} ({version}) stable; urgency=low
 
@@ -864,7 +930,7 @@ Depends: {dependencies}"""
             try:
                 # Önce dosya türünü kontrol et
                 if file_path.endswith('.py'):
-                    # Python dosyası için UTF-8 ve shebang ekle
+                    # Python dosyası için UTF-8 encoding kullan
                     try:
                         with open(file_path, 'r', encoding='utf-8') as source:
                             content = source.read()
@@ -872,16 +938,16 @@ Depends: {dependencies}"""
                             dest.write("#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n")
                             dest.write(content)
                     except UnicodeDecodeError:
-                        # UTF-8 ile açılamazsa Latin-1 ile dene
-                        with open(file_path, 'r', encoding='latin-1') as source:
-                            content = source.read()
-                        with open(dest_path, 'w', encoding='utf-8', newline='\n') as dest:
-                            dest.write("#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n")
-                            dest.write(content)
+                        # UTF-8 ile açılamazsa binary olarak kopyala
+                        shutil.copy2(file_path, dest_path)
+                        with open(dest_path, 'r+b') as f:
+                            content = f.read()
+                            f.seek(0)
+                            f.write(b"#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n" + content)
                 else:
-                    # Diğer çalıştırılabilir dosyalar için direkt kopyala
+                    # Diğer tüm dosyalar için binary kopyalama yap
                     shutil.copy2(file_path, dest_path)
-                
+            
                 # Çalıştırma izni ver
                 os.chmod(dest_path, 0o755)
                 self.log(f"Program dosyası kopyalandı: {dest_path}", "success")
@@ -1126,27 +1192,8 @@ License: GPL-3.0+"""
                 self.description.setPlainText(settings.get('description', ''))
                 self.dependencies.setText(settings.get('dependencies', ''))
                 self.filePath.setText(settings.get('file_path', ''))
-                
-                # Desktop ayarları
-                desktop = settings.get('desktop', {})
-                self.create_shortcut.setChecked(desktop.get('create_shortcut', False))
-                self.shortcut_name.setText(desktop.get('shortcut_name', ''))
-                self.desktop_name.setText(desktop.get('name', ''))
-                self.desktop_name_tr.setText(desktop.get('name_tr', ''))
-                self.desktop_comment.setText(desktop.get('comment', ''))
-                self.desktop_comment_tr.setText(desktop.get('comment_tr', ''))
-                self.desktop_type.setCurrentText(desktop.get('type', 'Application'))
-                self.desktop_icon.setText(desktop.get('icon', ''))
-                self.desktop_terminal.setCurrentText(desktop.get('terminal', 'false'))
-                self.main_category.setCurrentText(desktop.get('category', 'Yardımcı Programlar'))
-                self.sub_category.setCurrentText(desktop.get('subcategory', ''))
-                
-                # Debian dosyaları
-                debian = settings.get('debian', {})
-                self.changelog.setPlainText(debian.get('changelog', ''))
-                self.copyright.setPlainText(debian.get('copyright', ''))
-                self.rules.setPlainText(debian.get('rules', ''))
-                
+                                
+                              
                 # Install entries
                 install_entries = settings.get('install_entries', [])
                 for entry, (checkbox, src, dest) in zip(install_entries, self.install_entries):
@@ -1162,10 +1209,6 @@ License: GPL-3.0+"""
 # Uygulamanın çalıştırılması
 if __name__ == '__main__':
     try:
-        app = QApplication(sys.argv)
-        ex = DebCreatorApp()
-        ex.show()
-        sys.exit(app.exec_())
     except Exception as e:
         print(f"Program çalıştırma hatası: {e}")
         QMessageBox.critical(None, "Kritik Hata", str(e))
