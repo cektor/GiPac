@@ -20,7 +20,7 @@ Debian Package Builder System with a Highly Comprehensive Graphical User Interfa
 ![Linux(pardus)](2.png)  
 ![Linux(pardus)](3.png) 
 ![Linux(pardus)](4.png)  
-![Linux(pardus)](5.png)  
+
 --------------------
 
 
