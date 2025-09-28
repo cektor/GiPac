@@ -2,7 +2,7 @@
     <img src="https://raw.githubusercontent.com/pedromxavier/flag-badges/main/badges/TR.svg" alt="made in TR">
 </a>
 
-# GiPac
+# GiPac - Gift Package
 Debian Package Builder System with a Highly Comprehensive Graphical User Interface
 
 
