@@ -31,10 +31,10 @@ Debian Package Builder System with a Highly Comprehensive Graphical User Interfa
 
 Linux (based debian) Terminal: Linux (debian based distributions) To install directly from Terminal.
 ```bash
-wget -O Setup_Linux64.deb https://github.com/cektor/GiPac/releases/download/1.1.0/Setup_Linux64.deb && sudo apt install ./Setup_Linux64.deb && sudo apt-get install -f -y
+wget -O Setup_Linux64.deb https://github.com/cektor/GiPac/releases/download/1.1.1/Setup_Linux64.deb && sudo apt install ./Setup_Linux64.deb && sudo apt-get install -f -y
 ```
 
 
 
-Release Page: https://github.com/cektor/GiPac/releases/tag/1.1.0
+Release Page: https://github.com/cektor/GiPac/releases/tag/1.1.1
 
