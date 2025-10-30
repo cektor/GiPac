@@ -16,12 +16,13 @@ Debian Package Builder System with a Highly Comprehensive Graphical User Interfa
 ----------------------------------
 
 # Linux Screenshot
-![Linux(pardus)](1.png)  
-![Linux(pardus)](2.png)  
-![Linux(pardus)](3.png) 
-![Linux(pardus)](4.png)  
-![Linux(pardus)](5.png)  
-![Linux(pardus)](6.png)  
+![Linux(pardus)](ScreenShots/1.png)  
+![Linux(pardus)](ScreenShots/2.png)  
+![Linux(pardus)](ScreenShots/3.png) 
+![Linux(pardus)](ScreenShots/4.png)  
+![Linux(pardus)](ScreenShots/5.png)  
+![Linux(pardus)](ScreenShots/6.png)  
+![Linux(pardus)](ScreenShots/7.png)
 --------------------
 
 
